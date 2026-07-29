@@ -7,6 +7,8 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
+    @IBOutlet private weak var noButton: UIButton!
+    @IBOutlet private weak var yesButton: UIButton!
     
     // MARK: - Properties
     
@@ -51,8 +53,14 @@ final class MovieQuizViewController: UIViewController {
             isCorrect: answer == currentQuestion.correctAnswer
         )
     }
+    
+    private func setButtonsEnabled(_ isEnabled: Bool) {
+        yesButton.isEnabled = isEnabled
+        noButton.isEnabled = isEnabled
+    }
 
     private func showAnswerResult(isCorrect: Bool) {
+        setButtonsEnabled(false)
         if isCorrect {
             correctAnswers += 1
         }
@@ -78,6 +86,7 @@ final class MovieQuizViewController: UIViewController {
     }
 
     private func show(quiz step: QuizStepViewModel) {
+        setButtonsEnabled(true)
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
