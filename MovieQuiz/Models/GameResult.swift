@@ -5,7 +5,7 @@
 //  Created by Daniil Sivachenko on 28.07.2026.
 //
 
-import UIKit
+import Foundation
 
 struct GameResult {
     let correct: Int

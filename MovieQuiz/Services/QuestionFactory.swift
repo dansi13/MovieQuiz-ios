@@ -7,7 +7,9 @@
 
 import Foundation
 
-class QuestionFactory: QuestionFactoryProtocol {
+final class QuestionFactory: QuestionFactoryProtocol {
+    
+    // MARK: - Properties
     
     weak var delegate: QuestionFactoryDelegate?
     
@@ -54,6 +56,15 @@ class QuestionFactory: QuestionFactoryProtocol {
                 correctAnswer: false)
         ]
     
+    // MARK: - Initialization
+    
+    
+    init(delegate: QuestionFactoryDelegate) {
+        self.delegate = delegate
+    }
+    
+    // MARK: - Public Methods
+    
     func requestNextQuestion() {
         guard let index = (0..<questions.count).randomElement() else {
             delegate?.didReceiveNextQuestion(question: nil)
@@ -61,9 +72,5 @@ class QuestionFactory: QuestionFactoryProtocol {
         }
         let question = questions[safe: index]
         delegate?.didReceiveNextQuestion(question: question)
-    }
-    
-    init(delegate: QuestionFactoryDelegate) {
-        self.delegate = delegate
     }
 }
