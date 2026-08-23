@@ -12,4 +12,5 @@ struct AlertModel {
     var message: String
     var buttonText: String
     var completion: () -> Void
+    var accessibilityIdentifier: String
 }
