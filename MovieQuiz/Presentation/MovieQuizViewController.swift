@@ -42,16 +42,19 @@ final class MovieQuizViewController: UIViewController {
         
         showLoadingIndicator()
         questionFactory?.loadData()
+        presenter.viewController = self
     }
     
     // MARK: - IBActions
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        didAnswer(true)
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        didAnswer(false)
+        presenter.currentQuestion = currentQuestion
+        presenter.noButtonClicked()
     }
     
     // MARK: - Private Methods
@@ -69,7 +72,7 @@ final class MovieQuizViewController: UIViewController {
         noButton.isEnabled = isEnabled
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         setButtonsEnabled(false)
         if isCorrect {
             correctAnswers += 1
