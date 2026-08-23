@@ -4,11 +4,11 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - IBOutlets
     
-    @IBOutlet private weak var imageView: UIImageView!
-    @IBOutlet private weak var textLabel: UILabel!
-    @IBOutlet private weak var counterLabel: UILabel!
-    @IBOutlet private weak var noButton: UIButton!
-    @IBOutlet private weak var yesButton: UIButton!
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var textLabel: UILabel!
+    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var noButton: UIButton!
+    @IBOutlet private var yesButton: UIButton!
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Constants
@@ -23,8 +23,6 @@ final class MovieQuizViewController: UIViewController {
     private var presenter: MovieQuizPresenter!
     
     private var alertPresenter = AlertPresenter()
-    
-    private var statisticService: StatisticServiceProtocol = StatisticService()
     
     // MARK: - Lifecycle
     
@@ -54,26 +52,24 @@ final class MovieQuizViewController: UIViewController {
         noButton.isEnabled = isEnabled
     }
     
-    func showAnswerResult(isCorrect: Bool) {
-        presenter.didAnswer(isCorrectAnswer: isCorrect)
-        
+    func highlightImageBorder(isCorrectAnswer: Bool) {
         setButtonsEnabled(false)
-        
+
+        imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor =
-        isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self else { return }
-            
-            self.presenter.showNextQuestionOrResults()
-            
-            self.imageView.layer.borderColor = UIColor.clear.cgColor
-        }
+            isCorrectAnswer
+            ? UIColor.ypGreen.cgColor
+            : UIColor.ypRed.cgColor
+    }
+
+    func clearImageBorder() {
+        imageView.layer.borderColor = UIColor.clear.cgColor
     }
     
     func show(quiz step: QuizStepViewModel) {
         setButtonsEnabled(true)
+
         imageView.image = UIImage(data: step.image) ?? UIImage()
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
@@ -108,11 +104,6 @@ final class MovieQuizViewController: UIViewController {
     }
     
     func show(quiz result: QuizResultsViewModel) {
-        statisticService.store(
-            correct: presenter.correctAnswers,
-            total: presenter.questionsAmount
-        )
-        
         let model = AlertModel(
             title: result.title,
             message: result.text,
