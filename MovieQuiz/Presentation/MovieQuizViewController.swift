@@ -32,7 +32,16 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         imageView.layer.cornerRadius = 20
         imageView.layer.masksToBounds = true
         
-        presenter = MovieQuizPresenter(viewController: self)
+        presenter = MovieQuizPresenter(
+            viewController: self,
+            statisticService: StatisticService(),
+            questionFactoryCreator: { delegate in
+                QuestionFactory(
+                    moviesLoader: MoviesLoader(),
+                    delegate: delegate
+                )
+            }
+        )
     }
     
     // MARK: - IBActions
@@ -54,22 +63,22 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     
     func highlightImageBorder(isCorrectAnswer: Bool) {
         setButtonsEnabled(false)
-
+        
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor =
-            isCorrectAnswer
-            ? UIColor.ypGreen.cgColor
-            : UIColor.ypRed.cgColor
+        isCorrectAnswer
+        ? UIColor.ypGreen.cgColor
+        : UIColor.ypRed.cgColor
     }
-
+    
     func clearImageBorder() {
         imageView.layer.borderColor = UIColor.clear.cgColor
     }
     
     func show(quiz step: QuizStepViewModel) {
         setButtonsEnabled(true)
-
+        
         imageView.image = UIImage(data: step.image) ?? UIImage()
         textLabel.text = step.question
         counterLabel.text = step.questionNumber

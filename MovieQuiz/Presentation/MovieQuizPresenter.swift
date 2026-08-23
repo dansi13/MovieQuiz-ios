@@ -27,6 +27,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     
     private let statisticService: StatisticServiceProtocol
+    private let questionFactoryCreator: (QuestionFactoryDelegate) -> QuestionFactoryProtocol
     
     // MARK: - Public Methods
     
@@ -90,14 +91,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     func proceedWithAnswer(isCorrect: Bool) {
         didAnswer(isCorrectAnswer: isCorrect)
-
+        
         viewController?.highlightImageBorder(
             isCorrectAnswer: isCorrect
         )
-
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self else { return }
-
+            
             self.viewController?.clearImageBorder()
             self.proceedToNextQuestionOrResults()
         }
@@ -159,14 +160,16 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         ].joined(separator: "\n")
     }
     
-    init(viewController: MovieQuizViewControllerProtocol) {
+    init(
+        viewController: MovieQuizViewControllerProtocol,
+        statisticService: StatisticServiceProtocol,
+        questionFactoryCreator: @escaping (QuestionFactoryDelegate) -> QuestionFactoryProtocol
+    ) {
         self.viewController = viewController
-        self.statisticService = StatisticService()
+        self.statisticService = statisticService
+        self.questionFactoryCreator = questionFactoryCreator
         
-        questionFactory = QuestionFactory(
-            moviesLoader: MoviesLoader(),
-            delegate: self
-        )
+        self.questionFactory = questionFactoryCreator(self)
         
         questionFactory?.loadData()
         viewController.showLoadingIndicator()
